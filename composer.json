@@ -1,0 +1,14 @@
+{
+    "name": "hazedevelopment/iniconfig",
+    "description": "A library to use a ini config in your app",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "jurien hamaker",
+            "email": "jurienhamaker@hotmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
