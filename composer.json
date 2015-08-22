@@ -9,6 +9,11 @@
             "email": "jurienhamaker@hotmail.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "HazeDevelopment\\": "src/"
+        }
+    },
     "minimum-stability": "dev",
     "require": {}
 }
