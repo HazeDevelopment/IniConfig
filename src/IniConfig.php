@@ -1,15 +1,18 @@
 <?php
 namespace HazeDevelopment;
 
+use \WriteIniFile\WriteIniFile;
+
 class IniConfig
 {
-	public $config = array();
-	public $path;
+	public $ini;
+	public static $path;
+	public static $config;
 
 	public function __construct()
 	{
-		self::$path = config('iniconfig.file_path');
-		self::$config = parse_ini_file(self::$path, true);
+		$this->ini = new WriteIniFile(base_path(config('iniconfig.file_path')));
+		dd($this->ini);
 	}
 
 	public function __get($name)
@@ -25,6 +28,23 @@ class IniConfig
 	}
 
 	public function __set($name, $value)
+	{
+		self::$config[$name] = $value;
+	}
+
+	public static function get($name)
+	{
+		if(self::$config[$name])
+		{
+			return self::$config[$name];	
+		}
+		else
+		{
+			return False;
+		}
+	}
+
+	public static function set($name, $value)
 	{
 		self::$config[$name] = $value;
 	}

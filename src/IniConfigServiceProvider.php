@@ -16,6 +16,10 @@ class IniConfigServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/config/iniconfig.php' => config_path('iniconfig.php')
         ], 'config');
+
+        $this->publishes([
+            __DIR__.'/config/settings.ini' => base_path('settings.ini')
+        ]);
     }
 
     /**

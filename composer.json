@@ -3,6 +3,7 @@
     "description": "A library to use a ini config in your app",
     "type": "library",
     "license": "MIT",
+    "version" : "1.0.0",
     "authors": [
         {
             "name": "jurien hamaker",
@@ -15,5 +16,7 @@
         }
     },
     "minimum-stability": "dev",
-    "require": {}
+    "require": {
+        "magicalex/write-ini-file": "dev-master"
+    }
 }
