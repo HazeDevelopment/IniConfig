@@ -37,7 +37,7 @@ class IniConfig
      *
      * @param string $name
      */
-    public function get($name)
+    public function get($name, $default = false)
     {
     	if(strpos($name, '.') !== false)
     	{
@@ -47,12 +47,12 @@ class IniConfig
 
     		if(!array_key_exists($top, $this->data_ini_file))
     		{
-    			return false;
+    			return $default;
     		}
 
     		if(!array_key_exists($sub, $this->data_ini_file[$top]))
     		{
-    			return false;
+    			return $default;
     		}
 
     		return $this->data_ini_file[$top][$sub];
@@ -60,7 +60,7 @@ class IniConfig
 
     	if(!array_key_exists($name, $this->data_ini_file))
 		{
-			return false;
+			return $default;
 		}
 
     	return $this->data_ini_file[$name];
