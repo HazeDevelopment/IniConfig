@@ -26,9 +26,9 @@ class IniConfig
 
     public static function init()
     {
+        self::$path_to_ini_file = base_path(config('iniconfig.file_path'));
         if(!self::$path_to_ini_file || !self::$data_ini_file)
         {
-            self::$path_to_ini_file = base_path(config('iniconfig.file_path'));
             if (file_exists(self::$path_to_ini_file) === true) {
                 self::$data_ini_file = @parse_ini_file(self::$path_to_ini_file, true);
             } else {
