@@ -15,8 +15,8 @@
             "HazeDevelopment\\": "src/"
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "@dev",
     "require": {
-        "magicalex/write-ini-file": "*"
+        "magicalex/write-ini-file": "dev-master"
     }
 }
