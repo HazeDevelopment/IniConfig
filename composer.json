@@ -17,6 +17,6 @@
     },
     "minimum-stability": "dev",
     "require": {
-        "magicalex/write-ini-file": "dev-master"
+        "magicalex/write-ini-file": "*"
     }
 }
