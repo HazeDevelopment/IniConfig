@@ -11,8 +11,8 @@ class IniConfig
      * @var string $path_to_ini_file
      * @var array $data_ini_file
      */
-    protected $path_to_ini_file;
-    protected $data_ini_file;
+    protected static $path_to_ini_file = false;
+    protected static $data_ini_file = false;
 
     /**
      * Constructor.
@@ -21,14 +21,22 @@ class IniConfig
      */
     public function __construct()
     {
-        $this->path_to_ini_file = base_path(config('iniconfig.file_path'));
-        if (file_exists($this->path_to_ini_file) === true) {
-            $this->data_ini_file = @parse_ini_file($this->path_to_ini_file, true);
-        } else {
-            $this->data_ini_file = [];
-        }
-        if (false === $this->data_ini_file) {
-            throw new \Exception(sprintf('Unable to parse file ini : %s', $this->path_to_ini_file));
+        self::init();
+    }
+
+    public static function init()
+    {
+        if(!self::$path_to_ini_file || !self::$data_ini_file)
+        {
+            self::$path_to_ini_file = base_path(config('iniconfig.file_path'));
+            if (file_exists(self::$path_to_ini_file) === true) {
+                self::$data_ini_file = @parse_ini_file(self::$path_to_ini_file, true);
+            } else {
+                self::$data_ini_file = [];
+            }
+            if (false === self::$data_ini_file) {
+                throw new \Exception(sprintf('Unable to parse file ini : %s', self::$path_to_ini_file));
+            }
         }
     }
 
@@ -37,33 +45,38 @@ class IniConfig
      *
      * @param string $name
      */
-    public function get($name, $default = false)
+    public static function get($name, $default = false)
     {
-    	if(strpos($name, '.') !== false)
-    	{
-    		$splitted = explode(".", $name);
-    		$top = $splitted[0];
-    		$sub = $splitted[1];
+        if(self::_isStatic())
+        {
+            self::init();
+        }
 
-    		if(!array_key_exists($top, $this->data_ini_file))
-    		{
-    			return $default;
-    		}
+        if(strpos($name, '.') !== false)
+        {
+            $splitted = explode(".", $name);
+            $top = $splitted[0];
+            $sub = $splitted[1];
 
-    		if(!array_key_exists($sub, $this->data_ini_file[$top]))
-    		{
-    			return $default;
-    		}
+            if(!array_key_exists($top, self::$data_ini_file))
+            {
+                return $default;
+            }
 
-    		return $this->data_ini_file[$top][$sub];
-    	}
+            if(!array_key_exists($sub, self::$data_ini_file[$top]))
+            {
+                return $default;
+            }
 
-    	if(!array_key_exists($name, $this->data_ini_file))
-		{
-			return $default;
-		}
+            return self::$data_ini_file[$top][$sub];
+        }
 
-    	return $this->data_ini_file[$name];
+        if(!array_key_exists($name, self::$data_ini_file))
+        {
+            return $default;
+        }
+
+        return self::$data_ini_file[$name];
     }
 
     /**
@@ -72,85 +85,90 @@ class IniConfig
      * @param string $name
      * @param string $value
      */
-    public function set($name, $value)
+    public static function set($name, $value)
     {
-		if(strpos($name, '.') !== false)
-    	{
-    		$splitted = explode(".", $name);
-    		$top = $splitted[0];
-    		$sub = $splitted[1];
+        if(self::_isStatic())
+        {
+            self::init();
+        }
 
-    		if(!array_key_exists($top, $this->data_ini_file))
-    		{
-    			$this->data_ini_file[$top] = [];
-    			$this->data_ini_file[$top][$sub] = $value;
-    		}
-    		else
-    		{
-    			$this->data_ini_file[$top][$sub] = $value;
-    		}
-    	}
-    	else
-    	{
-    		$this->data_ini_file[$name] = $value;
-    	}
-    	
-    	return $this;
+
+        if(strpos($name, '.') !== false)
+        {
+            $splitted = explode(".", $name);
+            $top = $splitted[0];
+            $sub = $splitted[1];
+
+            if(!array_key_exists($top, self::$data_ini_file))
+            {
+                self::$data_ini_file[$top] = [];
+                self::$data_ini_file[$top][$sub] = $value;
+            }
+            else
+            {
+                self::$data_ini_file[$top][$sub] = $value;
+            }
+        }
+        else
+        {
+            self::$data_ini_file[$name] = $value;
+        }
+        
+        return true;   
     }
-
 
     /**
      * method to check if ini file contains value
      * @param string $name
      */
-    public function has($name)
+    public static function has($name)
     {
-    	if(strpos($name, '.') !== false)
-    	{
-    		$splitted = explode(".", $name);
-    		$top = $splitted[0];
-    		$sub = $splitted[1];
+        if(self::_isStatic())
+        {
+            self::init();
+        }
 
-    		if(!array_key_exists($top, $this->data_ini_file))
-    		{
-    			return false;
-    		}
-    		else
-    		{
-    			if(!array_key_exists($sub, $this->data_ini_file[$top]))
-	    		{
-	    			return false;
-	    		}
-    		}
+        if(strpos($name, '.') !== false)
+        {
+            $splitted = explode(".", $name);
+            $top = $splitted[0];
+            $sub = $splitted[1];
 
-    		return true;
-    	}
+            if(!array_key_exists($top, self::$data_ini_file))
+            {
+                return false;
+            }
+            else
+            {
+                if(!array_key_exists($sub, self::$data_ini_file[$top]))
+                {
+                    return false;
+                }
+            }
 
-    	if(!array_key_exists($name, $this->data_ini_file))
-		{
-			return false;
-		}
+            return true;
+        }
 
-    	return true;
+        if(!array_key_exists($name, self::$data_ini_file))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * method to get all values
      * @param string $name
      */
-    public function all()
+    public static function all()
     {
-    	return $this->data_ini_file;
-    }
+        if(self::_isStatic())
+        {
+            self::init();
+        }
 
-    /**
-     * method for change value in the ini file.
-     *
-     * @param array $new_value
-     */
-    public function update(array $new_value)
-    {
-        $this->data_ini_file = array_replace_recursive($this->data_ini_file, $new_value);
+        return self::$data_ini_file;
     }
 
     /**
@@ -160,7 +178,12 @@ class IniConfig
      */
     public function create(array $new_ini_file)
     {
-        $this->data_ini_file = $new_ini_file;
+        if(self::_isStatic())
+        {
+            self::init();
+        }
+
+        self::$data_ini_file = $new_ini_file;
     }
 
     /**
@@ -169,27 +192,49 @@ class IniConfig
      */
     public function erase()
     {
-        $this->data_ini_file = [];
-    }
+        if(self::_isStatic())
+        {
+            self::init();
+        }
 
-    /**
-     * method for add new value in the ini file.
-     *
-     * @param array $add_new_value
-     */
-     public function add(array $add_new_value)
-     {
-         $this->data_ini_file = array_merge_recursive($this->data_ini_file, $add_new_value);
-     }
+        self::$data_ini_file = [];
+    }
 
      /**
      * method for remove some values in the ini file.
      *
-     * @param array $add_new_value
+     * @param string $name
      */
-     public function rm(array $rm_value)
+     public static function delete($name)
      {
-         $this->data_ini_file = self::arrayDiffRecursive($this->data_ini_file, $rm_value);
+        if(self::_isStatic())
+        {
+            self::init();
+        }
+
+        if(strpos($name, '.') !== false)
+        {
+            $splitted = explode(".", $name);
+            $top = $splitted[0];
+            $sub = $splitted[1];
+
+            if(array_key_exists($top, self::$data_ini_file))
+            {
+                if(array_key_exists($sub, self::$data_ini_file[$top]))
+                {
+                    unset(self::$data_ini_file[$top][$sub]);
+                    return true;
+                }
+            }
+        }
+
+        if(array_key_exists($name, self::$data_ini_file))
+        {
+            unset(self::$data_ini_file[$name]);
+            return true;
+        }
+
+        return false;
      }
 
     /**
@@ -197,13 +242,18 @@ class IniConfig
      *
      * @return bool true for a succes
      */
-    public function write()
+    public static function save()
     {
-        $data_array = $this->data_ini_file;
+        if(self::_isStatic())
+        {
+            self::init();
+        }
+
+        $data_array = self::$data_ini_file;
         $file_content = null;
-        foreach ($data_array as $key_1 => $groupe) {
+        foreach ($data_array as $key_1 => $group) {
             $file_content .= "\n[" . $key_1 . "]\n";
-            foreach ($groupe as $key_2 => $value_2) {
+            foreach ($group as $key_2 => $value_2) {
                 if (is_array($value_2)) {
                     foreach ($value_2 as $key_3 => $value_3) {
                         $file_content .= $key_2 . '[' . $key_3 . '] = ' . self::encode($value_3) . "\n";
@@ -214,9 +264,9 @@ class IniConfig
             }
         }
         $file_content = preg_replace('#^\n#', '', $file_content);
-        $result = @file_put_contents($this->path_to_ini_file, $file_content);
+        $result = @file_put_contents(self::$path_to_ini_file, $file_content);
         if (false === $result) {
-            throw new \Exception(sprintf('Unable to write in the file ini : %s', $this->path_to_ini_file));
+            throw new \Exception(sprintf('Unable to write in the file ini : %s', self::$path_to_ini_file));
         }
         return ($result !== false) ? true : false;
     }
@@ -275,5 +325,16 @@ class IniConfig
             }
         }
         return $finalArray;
+    }
+
+    /**
+     * function to check if iniconfig is called statically
+     **/
+    private static function _isStatic() {
+        $backtrace = debug_backtrace();
+
+        // The 0th call is to _isStatic(), so we need to check the next
+        // call down the stack.
+        return $backtrace[1]['type'] == '::';
     }
 }
