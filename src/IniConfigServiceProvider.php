@@ -14,11 +14,11 @@ class IniConfigServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/config/iniconfig.php' => config_path('iniconfig.php')
+            __DIR__.'/config/iniconfig.php' => config_path('iniconfig.php'),
         ], 'config');
 
         $this->publishes([
-            __DIR__.'/config/settings.ini' => base_path('settings.ini')
+            __DIR__.'/config/settings.ini' => base_path('settings.ini'),
         ]);
     }
 
